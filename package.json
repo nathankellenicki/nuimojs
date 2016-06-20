@@ -1,0 +1,14 @@
+{
+  "name": "nuimojs",
+  "version": "0.0.1",
+  "description": "Nuimo.js - A Node.js library for interacting with Nuimo",
+  "main": "nuimo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nathan Kunicki <me@nathankuniki.com>",
+  "license": "MIT",
+  "dependencies": {
+    "noble": "1.6.0"
+  }
+}
