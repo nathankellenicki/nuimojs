@@ -15,7 +15,7 @@ Note: Nuimo.js has been tested on macOS 10.11 and Debian/Raspbian on the Raspber
 ### Usage
 
 ```javascript
-let Nuimo = require("nuimo"),
+let Nuimo = require("nuimojs"),
     nuimo = new Nuimo();
 ```
 
