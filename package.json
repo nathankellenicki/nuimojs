@@ -6,9 +6,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nathankunicki/nuimojs.git"
+  },
   "author": "Nathan Kunicki <me@nathankuniki.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nathankunicki/nuimojs/issues"
+  },
+  "homepage": "https://github.com/nathankunicki/nuimojs#readme",
   "dependencies": {
     "noble": "1.6.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   }
 }
