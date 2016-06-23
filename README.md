@@ -19,6 +19,8 @@ let Nuimo = require("nuimo"),
     nuimo = new Nuimo();
 ```
 
+Examples are available in the "examples" directory.
+
 ### Class: Nuimo
 
 Note: Subclass of EventEmitter.
@@ -61,7 +63,7 @@ Connects to a previously discovered Nuimo device. The callback is triggered when
 
 ##### setLEDMatrix(matrix, brightness, timeout)
 
-Outputs a pattern to the LED matrix on the front of the device.
+Outputs a pattern to the 9x9 LED matrix on the front of the device.
 
 Matrix is either:
 - An array of 81 items, each representing one of the 81 LED's, starting at the top left. Each item in the array should be either 0 or 1.
@@ -91,9 +93,7 @@ Triggered when the user releases the central button.
 
 ##### on("swipe", callback(direction))
 
-Triggered when the user swipes in a direction on the central pad. Direction is a number between 0-3.
-
-Consts are available for ease of direction comparisons (Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT, Nuimo.Direction.UP, Nuimo.Direction.DOWN).
+Triggered when the user swipes in a direction on the central pad. Direction can be one of: Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT, Nuimo.Direction.UP, or Nuimo.Direction.DOWN.
 
 ##### on("rotate", callback(amount))
 
@@ -101,9 +101,7 @@ Triggered when the user rotates the outer ring. The amount is the amount of degr
 
 ##### on("fly", callback(direction, speed))
 
-Triggered when the user waves their hand over the sensor. Direction is a number between 0-1, speed is either 1 or 2.
-
-Consts are available for ease of direction comparisons (Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT).
+Triggered when the user waves their hand over the sensor. Direction is either Nuimo.Direction.LEFT or Nuimo.Direction.RIGHT.
 
 ##### on("detect", callback(distance))
 
