@@ -10,15 +10,12 @@ nuimo.on("discover", (device) => {
     });
 
     device.on("batteryLevelChange", (level) => {
-        console.log(`Battery level changed to ${level}`);
+        console.log(`Battery level changed to ${level}%`);
     });
 
-    device.connect();
-
-    // Battery level can be read at any time
-    setTimeout(() => {
-        console.log(`Battery level is ${device.batteryLevel}`);
-    }, 3000);
+    device.connect(() => {
+        console.log(`Battery level is ${device.batteryLevel}%`);
+    });
 
 });
 
