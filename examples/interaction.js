@@ -18,10 +18,15 @@ nuimo.on("discover", (device) => {
     });
 
     device.on("swipe", (direction) => {
-        if (direction === Nuimo.Direction.LEFT) {
-            console.log("Swiped left");
-        } else if (direction === Nuimo.Direction.RIGHT) {
-            console.log("Swiped right");
+        switch (direction) {
+            case (Nuimo.Direction.LEFT):
+                console.log("Swiped left"); break;
+            case (Nuimo.Direction.RIGHT):
+                console.log("Swiped right"); break;
+            case (Nuimo.Direction.UP):
+                console.log("Swiped up"); break;
+            case (Nuimo.Direction.DOWN):
+                console.log("Swiped down"); break;
         }
     });
 
@@ -30,10 +35,11 @@ nuimo.on("discover", (device) => {
     });
 
     device.on("fly", (direction, speed) => {
-        if (direction === Nuimo.Direction.LEFT) {
-            console.log(`Flew left by speed ${speed}`);
-        } else if (direction === Nuimo.Direction.RIGHT) {
-            console.log(`Flew right by speed ${speed}`);
+        switch (direction) {
+            case (Nuimo.Direction.LEFT):
+                console.log(`Flew left by speed ${speed}`); break;
+            case (Nuimo.Direction.RIGHT):
+                console.log(`Flew right by speed ${speed}`); break;
         }
     });
 
