@@ -43,11 +43,31 @@ Triggered when a new Nuimo device is discovered.
 
 Note: Subclass of EventEmitter.
 
+#### Properties
+
+##### uuid
+
+Device unique identifier.
+
+##### batteryLevel
+
+The current battery level as a percentage between 0-100.
+
 #### Methods
 
 ##### connect(callback())
 
 Connects to a previously discovered Nuimo device. The callback is triggered when the device is ready for interacting with.
+
+##### setLEDMatrix(matrix, brightness, timeout)
+
+Outputs a pattern to the LED matrix on the front of the device.
+
+Matrix is either:
+- An array of 81 items, each representing one of the 81 LED's, starting at the top left. Each item in the array should be either 0 or 1.
+- A buffer of 11 bytes, each bit representing one of the 81 LED's, with the last 7 of the 11th byte being unused.
+
+Brightness is a value between 0-255. Timeout is how long the pattern should appear for (In milliseconds).
 
 #### Events
 
