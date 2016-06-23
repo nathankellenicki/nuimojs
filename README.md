@@ -8,7 +8,7 @@ Node.js v6.0+ required.
 npm install nuimojs --save
 ```
 
-Nuimo.js uses the Noble BLE library by Sandeep Mistry. On macOS everything should function out of the box. On Linux and Windows there are ([certain dependencies](https://github.com/sandeepmistry/noble#prerequisites)) which may need installed first.
+Nuimo.js uses the Noble BLE library by Sandeep Mistry. On macOS everything should function out of the box. On Linux and Windows there are [certain dependencies which may need installed first](https://github.com/sandeepmistry/noble#prerequisites).
 
 Note: Nuimo.js has been tested on macOS 10.11 and Debian/Raspbian on the Raspberry Pi 3 Model B.
 
@@ -36,3 +36,57 @@ Stops scanning for Nuimo devices.
 #### Events
 
 ##### on("discover", callback(device))
+
+Triggered when a new Nuimo device is discovered.
+
+### Class: Device
+
+Note: Subclass of EventEmitter.
+
+#### Methods
+
+##### connect(callback())
+
+Connects to a previously discovered Nuimo device. The callback is triggered when the device is ready for interacting with.
+
+#### Events
+
+##### on("connect", callback())
+
+Triggered when the device is ready for interacting with.
+
+##### on("batteryLevelChange", callback(level))
+
+Triggered when the battery level drops. (Note: Level is as a percentage between 0-100)
+
+*The following events are triggered when the device is interacted with:*
+
+##### on("press", callback())
+
+Triggered when the user presses down on the central button.
+
+##### on("release", callback())
+
+Triggered when the user releases the central button.
+
+##### on("swipe", callback(direction))
+
+Triggered when the user swipes in a direction on the central pad. Direction is a number between 0-3.
+
+Consts are available for ease of direction comparisons (Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT, Nuimo.Direction.UP, Nuimo.Direction.DOWN).
+
+##### on("rotate", callback(amount))
+
+Triggered when the user rotates the outer ring. The amount is the amount of degrees the ring was rotated (Negative for counterclockwise).
+
+##### on("fly", callback(direction, speed))
+
+Triggered when the user waves their hand over the sensor. Direction is a number between 0-1, speed is either 1 or 2.
+
+Consts are available for ease of direction comparisons (Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT).
+
+##### on("detect", callback(distance))
+
+Triggered when a hand is detected over the sensor. The distance represents how close the hand is to the sensor (Between 0-255, 255 being farthest away).
+
+Note: This event is continuously triggered as long as a hand is detected.

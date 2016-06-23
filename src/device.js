@@ -52,8 +52,6 @@ class Device extends EventEmitter {
                 return;
             }
 
-            this.emit("connect");
-
             this._peripheral.discoverServices([], (err, services) => {
                 services.forEach((service) => {
 
@@ -145,6 +143,7 @@ class Device extends EventEmitter {
         if (this._batteryReady && this._LEDReady) {
             if (this._connectCallback) {
                 this._connectCallback();
+                this.emit("connect");
                 this._connectCallback = null;
             }
         }

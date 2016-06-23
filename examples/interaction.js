@@ -43,8 +43,8 @@ nuimo.on("discover", (device) => {
         }
     });
 
-    device.on("detect", (amount) => {
-        console.log(`Detected hand at distance ${amount}`);
+    device.on("detect", (distance) => {
+        console.log(`Detected hand at distance ${distance}`);
     });
 
     device.connect();
