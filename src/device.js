@@ -1,4 +1,5 @@
-let EventEmitter = require("events").EventEmitter;
+let Nuimo = require("../nuimo.js"),
+    EventEmitter = require("events").EventEmitter;
 
 
 const UUID = {
@@ -173,7 +174,18 @@ class Device extends EventEmitter {
 
 
     _handleSwipe (data) {
-        this.emit("swipe", data[0]);
+        let direction = data[0];
+        this.emit("swipe", direction);
+        switch (direction) {
+            case (Nuimo.Direction.LEFT):
+                this.emit("swipeLeft"); break;
+            case (Nuimo.Direction.RIGHT):
+                this.emit("swipeRight"); break;
+            case (Nuimo.Direction.UP):
+                this.emit("swipeUp"); break;
+            case (Nuimo.Direction.DOWN):
+                this.emit("swipeDown"); break;
+        }
     }
 
 
@@ -199,7 +211,16 @@ class Device extends EventEmitter {
 
         switch (true) {
             case (gesture >= 0 && gesture <= 3):
-                this.emit("fly", gesture, amount); break;
+                let direction = gesture,
+                    speed = amount;
+                this.emit("fly", direction, speed); break;
+                switch (direction) {
+                    case (Nuimo.Direction.LEFT):
+                        this.emit("flyLeft", speed); break;
+                    case (Nuimo.Direction.RIGHT):
+                        this.emit("flyRight", speed); break;
+                }
+                break;
             case (gesture === 4):
                 this.emit("detect", amount); break;
         }
