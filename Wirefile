@@ -2,7 +2,7 @@
   "name": "Nuimo",
   "description": "Wirething module for interacting with Nuimo devices.",
   "author": "Nathan Kunicki <me@nathankunicki.com>",
-  "entry_file": "./nuimo.js",
+  "main": "./nuimo.js",
   "devices": [
     {
       "name": "Nuimo",
