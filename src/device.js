@@ -222,7 +222,9 @@ class Device extends EventEmitter {
                 }
                 break;
             case (gesture === 4):
-                this.emit("detect", amount); break;
+                this.emit("detect", amount);
+                this.emit("distance", amount);
+                break;
         }
 
     }

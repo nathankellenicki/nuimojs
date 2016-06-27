@@ -95,6 +95,8 @@ Triggered when the user releases the central button.
 
 Triggered when the user swipes in a direction on the central pad. Direction can be one of: Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT, Nuimo.Direction.UP, or Nuimo.Direction.DOWN.
 
+Individual events are also triggered: "swipeLeft", "swipeRight", "swipeUp", "swipeDown". No direction is passed to the callback for these events.
+
 ##### on("rotate", callback(amount))
 
 Triggered when the user rotates the outer ring. The amount is the amount of degrees the ring was rotated (Negative for counterclockwise).
@@ -103,7 +105,11 @@ Triggered when the user rotates the outer ring. The amount is the amount of degr
 
 Triggered when the user waves their hand over the sensor. Direction is either Nuimo.Direction.LEFT or Nuimo.Direction.RIGHT.
 
-##### on("detect", callback(distance))
+Individual events are also triggered: "flyLeft", "flyRight". No direction is passed to the callback for these events.
+
+##### on("distance", callback(distance))
+
+*Note: This was previously named "detect", which is now deprecated.*
 
 Triggered when a hand is detected over the sensor. The distance represents how close the hand is to the sensor (Between 0-255, 255 being farthest away).
 
