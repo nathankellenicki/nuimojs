@@ -3,14 +3,6 @@ let noble = require("noble"),
 
 let Device = require("./src/device.js");
 
-const Direction = {
-    LEFT: 0,
-    RIGHT: 1,
-    UP: 2,
-    DOWN: 3
-};
-
-
 let ready = false,
     wantScan = false;
 
@@ -35,7 +27,7 @@ class Nuimo extends EventEmitter {
 
 
     static get Direction () {
-        return Direction;
+        return Device.Direction;
     }
 
 

@@ -1,6 +1,11 @@
-let Nuimo = require("../nuimo.js"),
-    EventEmitter = require("events").EventEmitter;
+let EventEmitter = require("events").EventEmitter;
 
+const Direction = {
+    LEFT: 0,
+    RIGHT: 1,
+    UP: 2,
+    DOWN: 3
+};
 
 const UUID = {
     Service: {
@@ -30,6 +35,10 @@ class Device extends EventEmitter {
         this._LEDReady = false;
         this._connectCallback = null;
         this._batteryLevel = 100;
+    }
+
+    static get Direction () {
+        return Direction;
     }
 
     get uuid () {
@@ -228,7 +237,6 @@ class Device extends EventEmitter {
         }
 
     }
-
 
 }
 
