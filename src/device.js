@@ -186,13 +186,13 @@ class Device extends EventEmitter {
         let direction = data[0];
         this.emit("swipe", direction);
         switch (direction) {
-            case (Nuimo.Direction.LEFT):
+            case (Direction.LEFT):
                 this.emit("swipeLeft"); break;
-            case (Nuimo.Direction.RIGHT):
+            case (Direction.RIGHT):
                 this.emit("swipeRight"); break;
-            case (Nuimo.Direction.UP):
+            case (Direction.UP):
                 this.emit("swipeUp"); break;
-            case (Nuimo.Direction.DOWN):
+            case (Direction.DOWN):
                 this.emit("swipeDown"); break;
         }
     }
@@ -224,9 +224,9 @@ class Device extends EventEmitter {
                     speed = amount;
                 this.emit("fly", direction, speed); break;
                 switch (direction) {
-                    case (Nuimo.Direction.LEFT):
+                    case (Direction.LEFT):
                         this.emit("flyLeft", speed); break;
-                    case (Nuimo.Direction.RIGHT):
+                    case (Direction.RIGHT):
                         this.emit("flyRight", speed); break;
                 }
                 break;
