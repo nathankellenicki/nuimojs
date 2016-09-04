@@ -53,6 +53,11 @@ class Nuimo extends EventEmitter {
     }
 
 
+    wirethingInit () {
+        this.scan();
+    }
+
+
     stop () {
         noble.stopScanning();
     }
