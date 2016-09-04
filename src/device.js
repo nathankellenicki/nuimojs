@@ -28,13 +28,18 @@ const UUID = {
 class Device extends EventEmitter {
 
     constructor (peripheral) {
+
         super();
+
+        this.deviceType = "nuimo";
+
         this._peripheral = peripheral;
         this._LEDCharacteristic = null;
         this._batteryReady = false;
         this._LEDReady = false;
         this._connectCallback = null;
         this._batteryLevel = 100;
+
     }
 
     static get Direction () {
