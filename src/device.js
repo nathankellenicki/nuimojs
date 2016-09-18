@@ -1,4 +1,6 @@
-let EventEmitter = require("events").EventEmitter;
+let async = require('async'),
+    debug = require('debug')('nuimojs'),
+    EventEmitter = require("events").EventEmitter;
 
 const Direction = {
     LEFT: 0,
@@ -24,20 +26,15 @@ const UUID = {
     }
 };
 
-
 class Device extends EventEmitter {
 
     constructor (peripheral) {
-
         super();
 
         this.deviceType = "nuimo";
 
         this._peripheral = peripheral;
         this._LEDCharacteristic = null;
-        this._batteryReady = false;
-        this._LEDReady = false;
-        this._connectCallback = null;
         this._batteryLevel = 100;
 
     }
@@ -55,75 +52,104 @@ class Device extends EventEmitter {
     }
 
     connect (callback) {
+        let self = this;
 
-        if (callback) {
-            this._connectCallback = callback;
-        }
+        let batteryReady = false;
+        let LEDReady = false;
+        let userInputs = 0;
 
-        this._peripheral.connect((err) => {
+        this._peripheral.connect(function(err) {
+            self._peripheral.discoverServices([], function(error, services) {
+            debug("Service discovery started");
+                let serviceIndex = 0;
 
-            if (err) {
-                this.emit("err", err);
-                return;
-            }
+                async.whilst(
+                    function () {
+                        return (serviceIndex < services.length);
+                    },
+                    function(callback) {
+                        let service = services[serviceIndex];
 
-            this._peripheral.discoverServices([], (err, services) => {
-                services.forEach((service) => {
+                        service.discoverCharacteristics([], function(error, characteristics) {
+                            let characteristicIndex = 0;
 
-                    if (service.uuid === UUID.Service.BATTERY_STATUS) {
+                            async.whilst(
+                                function () {
+                                    return (characteristicIndex < characteristics.length);
+                                },
+                                function(callback) {
+                                    let characteristic = characteristics[characteristicIndex];
 
-                        service.discoverCharacteristics([], (err, characteristics) => {
-                            characteristics.forEach((characteristic) => {
+                                    switch(service.uuid) {
+                                        case UUID.Service.BATTERY_STATUS:
+                                            batteryReady = true;
+                                            debug("Found Battery characteristic");
+                                            self._subscribeToCharacteristic(characteristic, self._handleBatteryChange.bind(self));
+                                            characteristic.read();
+                                            break;
+                                        case UUID.Service.LED_MATRIX:
+                                            self._LEDCharacteristic = characteristic;
+                                            LEDReady = true;
+                                            debug("Found LED characteristic");
+                                            break;
+                                        case UUID.Service.USER_INPUT_EVENTS:
+                                            switch(characteristic.uuid) {
+                                                case UUID.Characteristic.BUTTON_CLICK:
+                                                    debug("Found Button Click characteristic");
+                                                    self._subscribeToCharacteristic(characteristic, self._handleClick.bind(self));
+                                                    break;
+                                                case UUID.Characteristic.FLY:
+                                                    debug("Found Fly characteristic");
+                                                    self._subscribeToCharacteristic((characteristic), self._handleFlying.bind(self));
+                                                    break;
+                                                case UUID.Characteristic.ROTATION:
+                                                    debug("Found Rotation characteristic");
+                                                    self._subscribeToCharacteristic(characteristic, self._handleRotation.bind(self));
+                                                    break;
+                                                case UUID.Characteristic.SWIPE:
+                                                    debug("Found Swipe characteristic");
+                                                    self._subscribeToCharacteristic(characteristic, self._handleSwipe.bind(self));
+                                                    break;
+                                                default:
+                                                    //console.log(characteristic);
+                                            }
+                                            userInputs++;
+                                            break;
+                                    }
 
-                                if (characteristic.uuid === UUID.Characteristic.BATTERY_LEVEL) { // Battery level
-                                    this._subscribeToCharacteristic(characteristic, this._handleBatteryChange.bind(this));
-                                    characteristic.read();
+                                    characteristicIndex++;
+                                    return callback();
+                                },
+                                function(error) {
+                                    serviceIndex++;
+                                    return callback();
                                 }
-
-                            });
+                            );
                         });
+                    },
+                    function (err) {
+                        debug("Service discovery finished");
 
-                    } else if (service.uuid === UUID.Service.LED_MATRIX) {
+                        if (err !== null || batteryReady === false || LEDReady === false || userInputs < 5) {
+                            self._peripheral.disconnect();
+                            debug("Force disconnect");
+                        }
+                        else {
+                            debug("Emit connect");
+                            self.emit("connect");
+                        }
 
-                        service.discoverCharacteristics([], (err, characteristics) => {
-                            characteristics.forEach((characteristic) => {
-                                this._LEDCharacteristic = characteristic;
-                                this._LEDReady = true;
-                                this._completeConnect();
-                            });
-                        });
-
-                    } else if (service.uuid === UUID.Service.USER_INPUT_EVENTS) { // User Input service
-
-                        service.discoverCharacteristics([], (err, characteristics) => {
-                            characteristics.forEach((characteristic) => {
-
-                                if (characteristic.uuid === UUID.Characteristic.SWIPE) { // Swiping
-                                    this._subscribeToCharacteristic(characteristic, this._handleSwipe.bind(this));
-                                } else if (characteristic.uuid === UUID.Characteristic.BUTTON_CLICK) { // Button click
-                                    this._subscribeToCharacteristic(characteristic, this._handleClick.bind(this));
-                                } else if (characteristic.uuid === UUID.Characteristic.ROTATION) { // Rotation
-                                    this._subscribeToCharacteristic(characteristic, this._handleRotation.bind(this));
-                                } else if (characteristic.uuid === UUID.Characteristic.FLY) { // Flying
-                                    this._subscribeToCharacteristic((characteristic), this._handleFlying.bind(this));
-                                }
-
-                            });
-                        });
-
+                        if (callback) {
+                            callback();
+                        }
                     }
-
-                });
+                );
             });
-
         });
-
     }
-
 
     setLEDMatrix (matrixData, brightness, timeout) {
         if (this._LEDCharacteristic) {
-
             let buf = Buffer.alloc(13);
 
             if (matrixData instanceof Buffer) {
@@ -136,12 +162,10 @@ class Device extends EventEmitter {
             buf[12] = Math.floor(timeout / 100);
 
             this._LEDCharacteristic.write(buf, true);
-
         } else {
             this.emit("error", new Error("Not fully connected"));
         }
     }
-
 
     _LEDArrayToBuffer (arr) {
         let buf = Buffer.alloc(11);
@@ -152,18 +176,6 @@ class Device extends EventEmitter {
 
         return buf;
     }
-
-
-    _completeConnect () {
-        if (this._batteryReady && this._LEDReady) {
-            if (this._connectCallback) {
-                this._connectCallback();
-            }
-            this.emit("connect");
-            this._connectCallback = null;
-        }
-    }
-
 
     _subscribeToCharacteristic (characteristic, callback) {
         characteristic.on("read", (data, isNotification) => {
@@ -176,73 +188,80 @@ class Device extends EventEmitter {
         });
     }
 
-
     _handleBatteryChange (data) {
         this._batteryLevel = data[0];
-        this._batteryReady = true;
-        if (!this._connectCallback) {
-            this.emit("batteryLevelChange", data[0]);
-        }
-        this._completeConnect();
+        debug("Battery level %s%", data[0]);
+        this.emit("batteryLevelChange", data[0]);
     }
-
 
     _handleSwipe (data) {
         let direction = data[0];
         this.emit("swipe", direction);
         switch (direction) {
             case (Direction.LEFT):
-                this.emit("swipeLeft"); break;
+                debug("Swipe left");
+                this.emit("swipeLeft");
+                break;
             case (Direction.RIGHT):
-                this.emit("swipeRight"); break;
+                debug("Swipe right");
+                this.emit("swipeRight");
+                break;
             case (Direction.UP):
-                this.emit("swipeUp"); break;
+                debug("Swipe up");
+                this.emit("swipeUp");
+                break;
             case (Direction.DOWN):
-                this.emit("swipeDown"); break;
+                debug("Swipe down");
+                this.emit("swipeDown");
+                break;
         }
     }
 
-
     _handleClick (data) {
         if (data[0] === 0) {
+            debug("Button released");
             this.emit("release");
         } else {
+            debug("Button pressed");
             this.emit("press");
         }
     }
 
-
     _handleRotation (data) {
         let amount = data.readInt16LE();
+        debug("Rotate %s", amount);
         this.emit("rotate", amount);
     }
 
-
     _handleFlying (data) {
-
         let gesture = data[0],
             amount = data[1];
 
-        switch (true) {
-            case (gesture >= 0 && gesture <= 3):
+        switch (gesture) {
+            case 0:
+            case 1:
+            case 2:
                 let direction = gesture,
                     speed = amount;
                 this.emit("fly", direction, speed); break;
                 switch (direction) {
                     case (Direction.LEFT):
-                        this.emit("flyLeft", speed); break;
+                        debug("Fly left %s", speed);
+                        this.emit("flyLeft", speed);
+                        break;
                     case (Direction.RIGHT):
-                        this.emit("flyRight", speed); break;
+                        debug("Fly right %s", speed);
+                        this.emit("flyRight", speed);
+                        break;
                 }
                 break;
-            case (gesture === 4):
+            case 4:
+                debug("Detect %s", amount);
                 this.emit("detect", amount);
                 this.emit("distance", amount);
                 break;
         }
-
     }
-
 }
 
 module.exports = Device;

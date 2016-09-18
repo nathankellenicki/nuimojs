@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/nathankunicki/nuimojs#readme",
   "dependencies": {
-    "noble": "1.6.0"
+    "noble": "1.6.0",
+    "async": ">=2.0.1",
+    "debug": ">=2.2.0"
   },
   "engines": {
     "node": ">=6.0.0"
