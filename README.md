@@ -1,5 +1,11 @@
 # Nuimo.js - A Node.js library for interacting with Nuimo devices
 
+UPDATE 0.2.0 - Adds new features, including:
+
+* RSSI value
+* Pad touch events (New Nuimo Firmware required)
+* Disconnect event
+
 ### Installation
 
 Node.js v6.0+ required.
@@ -55,6 +61,10 @@ Device unique identifier.
 
 The current battery level as a percentage between 0-100.
 
+##### rssi
+
+Received Signal Strength Indicator (RSSI) value of the device.
+
 #### Methods
 
 ##### connect(callback())
@@ -77,9 +87,17 @@ Brightness is a value between 0-255. Timeout is how long the pattern should appe
 
 Triggered when the device is ready for interacting with.
 
+##### on("disconnect", callback())
+
+Triggered when the device is disconnected.
+
 ##### on("batteryLevelChange", callback(level))
 
 Triggered when the battery level drops. (Note: Level is as a percentage between 0-100)
+
+##### on("rssiChange", callback(rssi))
+
+Triggered when the RSSI changes.
 
 *The following events are triggered when the device is interacted with:*
 
@@ -93,9 +111,15 @@ Triggered when the user releases the central button.
 
 ##### on("swipe", callback(direction))
 
-Triggered when the user swipes in a direction on the central pad. Direction can be one of: Nuimo.Direction.LEFT, Nuimo.Direction.RIGHT, Nuimo.Direction.UP, or Nuimo.Direction.DOWN.
+Triggered when the user swipes in a direction on the central pad. Direction can be one of: Nuimo.Swipe.LEFT, Nuimo.Swipe.RIGHT, Nuimo.Swipe.UP, or Nuimo.Swipe.DOWN.
 
 Individual events are also triggered: "swipeLeft", "swipeRight", "swipeUp", "swipeDown". No direction is passed to the callback for these events.
+
+##### on("touch", callback(area))
+
+Triggered when the user touches an area on the central pad. Area can be one of: Nuimo.Area.LEFT, Nuimo.Area.RIGHT, Nuimo.Area.TOP, or Nuimo.Area.BOTTOM.
+
+Individual events are also triggered: "touchLeft", "touchRight", "touchTop", "touchBottom". No area is passed to the callback for these events.
 
 ##### on("rotate", callback(amount))
 
@@ -103,9 +127,11 @@ Triggered when the user rotates the outer ring. The amount is the amount of degr
 
 ##### on("fly", callback(direction, speed))
 
-Triggered when the user waves their hand over the sensor. Direction is either Nuimo.Direction.LEFT or Nuimo.Direction.RIGHT.
+Triggered when the user waves their hand over the sensor. Direction is either Nuimo.Fly.LEFT or Nuimo.Fly.RIGHT.
 
 Individual events are also triggered: "flyLeft", "flyRight". No direction is passed to the callback for these events.
+
+Note: In earlier Nuimo firmware versions, speed could be 0, 1, or 2. In later versions, speed is always 0.
 
 ##### on("distance", callback(distance))
 

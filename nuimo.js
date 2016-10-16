@@ -28,6 +28,18 @@ class Nuimo extends EventEmitter {
         return Device.Direction;
     }
 
+    static get Swipe () {
+        return Device.Swipe;
+    }
+
+    static get Fly () {
+        return Device.Fly;
+    }
+
+    static get Area () {
+        return Device.Area;
+    }
+
     scan () {
         wantScan = true;
 
@@ -40,11 +52,11 @@ class Nuimo extends EventEmitter {
 
                 let device = new Device(peripheral);
 
-                device._peripheral.on('connect', function() {
+                device._peripheral.on("connect", () => {
                     debug("Peripheral connected");
                 });
 
-                device._peripheral.on('disconnect', function() {
+                device._peripheral.on("disconnect", () => {
                     debug("Peripheral disconnected");
 
                     if (wantScan) {

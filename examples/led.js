@@ -9,6 +9,10 @@ nuimo.on("discover", (device) => {
         console.log("Nuimo connected");
     });
 
+    device.on("disconnect", () => {
+        console.log("Nuimo disconnected");
+    });
+
     device.on("press", () => {
         device.setLEDMatrix([
             0, 0, 0, 0, 0, 0, 0, 0, 0,
