@@ -71,7 +71,7 @@ Received Signal Strength Indicator (RSSI) value of the device.
 
 Connects to a previously discovered Nuimo device. The callback is triggered when the device is ready for interacting with.
 
-##### setLEDMatrix(matrix, brightness, timeout)
+##### setLEDMatrix(matrix, brightness, timeout, configbits)
 
 Outputs a pattern to the 9x9 LED matrix on the front of the device.
 
@@ -80,6 +80,12 @@ Matrix is either:
 - A buffer of 11 bytes, each bit representing one of the 81 LED's, with the last 7 of the 11th byte being unused.
 
 Brightness is a value between 0-255. Timeout is how long the pattern should appear for (In milliseconds).
+
+Configbits is an optional value. It represents bits to toggle specific behaviour.
+Currently only the fifth bit (000X 0000)(decimal 16) is used.
+By passing decimal 16 as the configbits parameter, "Onion Skinning" is enabled, this allows smoother transactions between matrices.
+Not passing the parameter, or passing 0 will cause the default behaviour.
+In future, more options may be added. Please avoid writing to the first bit, since it's the last LED of the matrix.
 
 #### Events
 
