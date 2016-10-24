@@ -218,7 +218,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData, brightness, timeout) {
+    setLEDMatrix (matrixData, brightness, timeout, configbits) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);
@@ -228,6 +228,13 @@ class Device extends EventEmitter {
             } else {
                 this._LEDArrayToBuffer(matrixData).copy(buf);
             }
+            
+            //Config bits are optional.
+            if(typeof configbits === "number"){//Senic explained that they use config bits
+                buf[10] += configbits;//These are encoded in the unused bits of the buffer
+            }
+            //Using configbit = 16 (fifth bit is set, 0b00010000) will enable "Onion Skinning" effect in fading.
+            //Other config bits aren't yet used or defined.
 
             buf[11] = brightness;
             buf[12] = Math.floor(timeout / 100);
