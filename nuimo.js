@@ -39,6 +39,10 @@ class Nuimo extends EventEmitter {
     static get Area () {
         return Device.Area;
     }
+    
+    static get Options(){
+        return Device.Options;
+    }
 
     scan () {
         wantScan = true;
