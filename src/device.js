@@ -232,7 +232,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData, brightness, timeout, configbits) {
+    setLEDMatrix (matrixData, brightness, timeout, options) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);
@@ -244,8 +244,8 @@ class Device extends EventEmitter {
             }
             
             //Config bits are optional.
-            if(typeof configbits === "number"){//Senic explained that they use config bits
-                buf[10] += configbits;//These are encoded in the unused bits of the buffer
+            if(typeof options === "number"){//Senic explained that they use config bits
+                buf[10] += options;//These are encoded in the unused bits of the buffer
             }
             if(typeof options === "object"){
                 if(options.onion_skinning == true){
