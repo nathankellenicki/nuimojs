@@ -249,10 +249,10 @@ class Device extends EventEmitter {
             }
             if(typeof options === "object"){
                 if(options.onion_skinning == true){
-                    buf[10] += 0b00010000;
+                    buf[10] += Options.ONION_SKINNING;
                 }
                 if(options.builtin_matrix == true){
-                    buf[10] += 0b00100000;
+                    buf[10] += Options.BUILTIN_MATRIX;
                 }
             }
             //Using configbit = 16 (fifth bit is set, 0b00010000) will enable "Onion Skinning" effect in fading.
