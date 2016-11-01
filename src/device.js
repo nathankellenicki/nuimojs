@@ -29,6 +29,17 @@ const Area = {
     BOTTOM: 7
 };
 
+//Configuration bits, see https://github.com/nathankunicki/nuimojs/pull/12
+const Options = {
+    //1, 1st (Binair 0b00000001) is used for the matrix.
+    //2, 2nd bit (Binair 0b00000010) not used yet.
+    //4, 3rd bit (Binair 0b00000100) not used yet.
+    //8, 4th bit (Binair 0b00001000) not used yet.
+    ONION_SKINNING: 16,//5th bit, Binair: 0b00010000 used for onion skinning effect (smooth transition between matrices, https://en.wikipedia.org/wiki/Onion_skinning)
+    BUILTIN_MATRIX: 32 //6th bit, Binair: 0b00100000 used for displaying builtin matrices, when enabled, the first byte of the matrix indicates which builtin matrix is displayed. (Currently not documented which builtin matrixes are avaialable)
+    //64, 7th bit (Binair 0b01000000) not used yet.
+    //128,8th bit (Binair 0b10000000) not used yet.
+};
 
 const UUID = {
     Service: {
@@ -80,7 +91,10 @@ class Device extends EventEmitter {
     static get Area () {
         return Area;
     }
-
+    
+    static get Options(){
+        return Options;
+    }
 
     get uuid () {
         return this._peripheral.uuid;
@@ -218,7 +232,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData, brightness, timeout) {
+    setLEDMatrix (matrixData, brightness, timeout, options) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);
@@ -228,6 +242,21 @@ class Device extends EventEmitter {
             } else {
                 this._LEDArrayToBuffer(matrixData).copy(buf);
             }
+            
+            //Config bits are optional.
+            if(typeof options === "number"){//Senic explained that they use config bits
+                buf[10] += options;//These are encoded in the unused bits of the buffer
+            }
+            if(typeof options === "object"){
+                if(options.onion_skinning == true){
+                    buf[10] += Options.ONION_SKINNING;
+                }
+                if(options.builtin_matrix == true){
+                    buf[10] += Options.BUILTIN_MATRIX;
+                }
+            }
+            //Using configbit = 16 (fifth bit is set, 0b00010000) will enable "Onion Skinning" effect in fading.
+            //Other config bits aren't yet used or defined.
 
             buf[11] = brightness;
             buf[12] = Math.floor(timeout / 100);
