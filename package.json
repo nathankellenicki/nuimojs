@@ -1,6 +1,6 @@
 {
   "name": "nuimojs",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Nuimo.js - A Node.js library for interacting with Nuimo devices",
   "main": "nuimo.js",
   "scripts": {
