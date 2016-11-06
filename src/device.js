@@ -232,6 +232,11 @@ class Device extends EventEmitter {
     }
 
 
+    disconnect () {
+        this._peripheral.disconnect();
+    }
+
+
     setLEDMatrix (matrixData, brightness, timeout, options) {
 
         if (this._LEDCharacteristic) {
