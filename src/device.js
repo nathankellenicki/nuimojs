@@ -2,13 +2,6 @@ let async = require("async"),
     debug = require("debug")("nuimojs"),
     EventEmitter = require("events").EventEmitter;
 
-// Direction is now deprecated, use Swipe, Fly, or Area instead
-const Direction = {
-    LEFT: 0,
-    RIGHT: 1,
-    UP: 2,
-    DOWN: 3
-};
 
 const Swipe = {
     LEFT: 0,
@@ -29,17 +22,15 @@ const Area = {
     BOTTOM: 7
 };
 
-//Configuration bits, see https://github.com/nathankunicki/nuimojs/pull/12
+// Direction is now deprecated, use Swipe, Fly, or Area instead
+const Direction = Swipe;
+
+// Configuration bits, see https://github.com/nathankunicki/nuimojs/pull/12
 const Options = {
-    //1, 1st (Binair 0b00000001) is used for the matrix.
-    //2, 2nd bit (Binair 0b00000010) not used yet.
-    //4, 3rd bit (Binair 0b00000100) not used yet.
-    //8, 4th bit (Binair 0b00001000) not used yet.
-    ONION_SKINNING: 16,//5th bit, Binair: 0b00010000 used for onion skinning effect (smooth transition between matrices, https://en.wikipedia.org/wiki/Onion_skinning)
-    BUILTIN_MATRIX: 32 //6th bit, Binair: 0b00100000 used for displaying builtin matrices, when enabled, the first byte of the matrix indicates which builtin matrix is displayed. (Currently not documented which builtin matrixes are avaialable)
-    //64, 7th bit (Binair 0b01000000) not used yet.
-    //128,8th bit (Binair 0b10000000) not used yet.
+    ONION_SKINNING: 16,
+    BUILTIN_MATRIX: 32
 };
+
 
 const UUID = {
     Service: {
@@ -57,6 +48,7 @@ const UUID = {
         BUTTON_CLICK: "f29b1529cb1940f3be5c7241ecb82fd2"
     }
 };
+
 
 class Device extends EventEmitter {
 
@@ -91,13 +83,20 @@ class Device extends EventEmitter {
     static get Area () {
         return Area;
     }
-    
-    static get Options(){
+
+
+    static get Options () {
         return Options;
     }
 
+
     get uuid () {
         return this._peripheral.uuid;
+    }
+
+
+    get UUID () {
+        return this.uuid;
     }
 
 
@@ -108,6 +107,11 @@ class Device extends EventEmitter {
 
     get rssi () {
         return this._rssi;
+    }
+
+
+    get RSSI () {
+        return this.rssi;
     }
 
 
@@ -247,21 +251,17 @@ class Device extends EventEmitter {
             } else {
                 this._LEDArrayToBuffer(matrixData).copy(buf);
             }
-            
-            //Config bits are optional.
-            if(typeof options === "number"){//Senic explained that they use config bits
-                buf[10] += options;//These are encoded in the unused bits of the buffer
-            }
-            if(typeof options === "object"){
-                if(options.onion_skinning == true){
+
+            if (typeof options === "number") {
+                buf[10] += options;
+            } else if (typeof options === "object") {
+                if (options.onion_skinning) {
                     buf[10] += Options.ONION_SKINNING;
                 }
-                if(options.builtin_matrix == true){
+                if (options.builtin_matrix){
                     buf[10] += Options.BUILTIN_MATRIX;
                 }
             }
-            //Using configbit = 16 (fifth bit is set, 0b00010000) will enable "Onion Skinning" effect in fading.
-            //Other config bits aren't yet used or defined.
 
             buf[11] = brightness;
             buf[12] = Math.floor(timeout / 100);

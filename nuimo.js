@@ -21,9 +21,20 @@ noble.on("stateChange", (state) => {
 class Nuimo extends EventEmitter {
 
 
-    constructor () {
+    constructor (whitelist) {
         super();
         this._connectedDevices = {};
+        this._useWhitelist = false;
+
+        if (whitelist) {
+            if (Array.isArray(whitelist)) {
+                this._whitelist = whitelist;
+                this._useWhitelist = true;
+            } else if (typeof whitelist === "string") {
+                this._whitelist = [whitelist];
+                this._useWhitelist = true;
+            }
+        }
     }
 
 
@@ -47,7 +58,7 @@ class Nuimo extends EventEmitter {
     }
 
 
-    static get Options(){
+    static get Options (){
         return Device.Options;
     }
 
@@ -56,9 +67,16 @@ class Nuimo extends EventEmitter {
         wantScan = true;
 
         noble.on("discover", (peripheral) => {
+
             let advertisement = peripheral.advertisement;
 
             if (advertisement.localName === "Nuimo") {
+
+                if (this._useWhitelist && this._whitelist.indexOf(peripheral.uuid) < 0) {
+                    debug("Discovered device not in UUID whitelist");
+                    return;
+                }
+
                 peripheral.removeAllListeners();
                 noble.stopScanning();
 
