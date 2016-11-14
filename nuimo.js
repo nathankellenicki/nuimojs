@@ -23,7 +23,7 @@ class Nuimo extends EventEmitter {
 
     constructor () {
         super();
-        this._connectedDevices = [];
+        this._connectedDevices = {};
     }
 
 
@@ -66,15 +66,12 @@ class Nuimo extends EventEmitter {
 
                 device._peripheral.on("connect", () => {
                     debug("Peripheral connected");
-                    this._connectedDevices.push(device);
+                    this._connectedDevices[device.uuid] = device;
                 });
 
                 device._peripheral.on("disconnect", () => {
                     debug("Peripheral disconnected");
-
-                    if (this._connectedDevices.indexOf(device) >= 0) {
-                        this._connectedDevices.splice(this._connectedDevices.indexOf(device), 1);
-                    }
+                    delete this._connectedDevices[device.uuid];
 
                     if (wantScan) {
                         noble.startScanning();
@@ -105,11 +102,14 @@ class Nuimo extends EventEmitter {
 
 
     getConnectedDeviceByUUID (uuid) {
-        if (this._connectedDevices.indexOf(device) >= 0) {
-            return this._connectedDevices[this._connectedDevices.indexOf(device)];
-        } else {
-            return null;
-        }
+        return this._connectedDevices[uuid];
+    }
+
+
+    getConnectedDevices () {
+        return Object.keys(this._connectedDevices).map((uuid) => {
+            return this._connectedDevices[uuid];
+        })
     }
 
 
