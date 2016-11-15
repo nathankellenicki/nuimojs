@@ -1,12 +1,9 @@
 # Nuimo.js - A Node.js library for interacting with Nuimo devices
 
-UPDATE 0.3.0 - Added options for "setLEDMatrix".
+UPDATE 0.4.0 - Added:
 
-UPDATE 0.2.0 - Adds new features, including:
-
-* RSSI value
-* Pad touch events (New Nuimo Firmware required)
-* Disconnect event
+* Optional UUID discovery whitelist
+* Tracking and querying of connected devices
 
 ### Installation
 
@@ -29,9 +26,14 @@ let Nuimo = require("nuimojs"),
 
 Examples are available in the "examples" directory.
 
+
 ### Class: Nuimo
 
 Note: Subclass of EventEmitter.
+
+#### Constructor(whitelist)
+
+An optional whitelist of UUID's to discover. Leave undefined to discover all, or specify an array (For multiple devices) or string (For a single device).
 
 #### Methods
 
@@ -43,11 +45,20 @@ Begins scanning for Nuimo devices.
 
 Stops scanning for Nuimo devices.
 
+##### getConnectedDevices()
+
+Returns an array of all the connected devices (Items are instances of Device).
+
+##### getConnectedDeviceByUUID(uuid)
+
+Return the Device matching the requested UUID if it is connected.
+
 #### Events
 
 ##### on("discover", callback(device))
 
 Triggered when a new Nuimo device is discovered.
+
 
 ### Class: Device
 
@@ -73,7 +84,7 @@ Received Signal Strength Indicator (RSSI) value of the device.
 
 Connects to a previously discovered Nuimo device. The callback is triggered when the device is ready for interacting with.
 
-##### setLEDMatrix(matrix, brightness, timeout, options)
+##### setLEDMatrix(matrix, brightness, timeout, options = {})
 
 Outputs a pattern to the 9x9 LED matrix on the front of the device.
 
@@ -83,22 +94,29 @@ Matrix is either:
 
 Brightness is a value between 0-255. Timeout is how long the pattern should appear for (In milliseconds).
 
-Options are optional values/configurations to be used when setting LED matrices.
-- 5th bit (decimal 16, binair 0b00010000) is "onion skinning" which allows smoother transitions between matrices.
-- 6th bit (decimal 32, binair 0b00100000) is "builtin matrices" which gives the possibility to display the builtin led matrices (first byte of the matrix is to indicate which builtin matrix should be displayed). Currently these are not documented and may be subject to changes (can only be changed by Nuimo firmware).
+Two options are currently available (If options is undefined, both are disabled by default):
+- options.ONION_SKINNING (boolean) - Allows smoother transitions between matrices.
+- options.BUILTIN_MATRIX (boolean) - Use the inbuilt matrix (Undocumented, subject to change).
+ 
+Note: Options may also be specified as an integer representing a bitfield, with the following values:
+- ONION_SKINNING - 16
+- BUILTIN_MATRIX - 32
 
-usage:
-- setLEDMatrix(yourmatrix, yourbrightness, yourtimeout); //Default behaviour (no options enabled).
-- setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, {onion_skinning: true, builtin_matrix: true}); //Enable onion skinning and builtin matrix.
-- setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, Nuimo.Options.ONION_SKINNING + Nuimo.Options.BUILTIN_MATRIX); //Enable onion skinning and builtin matrix.
+Examples:
+```
+setLEDMatrix(yourmatrix, yourbrightness, yourtimeout); // Default
+```
 
-or you can define options yourself using a bit field (or by adding bits/bitfields), also see device.js and official Nuimo documentation:
-- setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, 0b00110000); 
-- setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, 0b00010000 + 0b00100000);
+```
+setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, {
+    onion_skinning: true,
+    builtin_matrix: true
+}); // Enable onion skinning and inbuilt matrix
+```
 
-(You can also choose to use decimal representation of the values, instead of binary)
-
-(This feature is built in, to forward support new bitfield configurations)
+```
+setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, 16 + 32); // Using bitfield, enable onion skinning and inbuilt matrix
+```
 
 #### Events
 
