@@ -95,8 +95,8 @@ Matrix is either:
 Brightness is a value between 0-255. Timeout is how long the pattern should appear for (In milliseconds).
 
 Two options are currently available (If options is undefined, both are disabled by default):
-- options.ONION_SKINNING (boolean) - Allows smoother transitions between matrices.
-- options.BUILTIN_MATRIX (boolean) - Use the inbuilt matrix (Undocumented, subject to change).
+- options.onionSkinning (boolean) - Allows smoother transitions between matrices.
+- options.builtinMatrix (boolean) - Use the inbuilt matrix (Undocumented, subject to change).
  
 Note: Options may also be specified as an integer representing a bitfield, with the following values:
 - ONION_SKINNING - 16
