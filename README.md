@@ -109,8 +109,8 @@ setLEDMatrix(yourmatrix, yourbrightness, yourtimeout); // Default
 
 ```
 setLEDMatrix(yourmatrix, yourbrightness, yourtimeout, {
-    onion_skinning: true,
-    builtin_matrix: true
+    onionSkinning: true,
+    builtinMatrix: true
 }); // Enable onion skinning and inbuilt matrix
 ```
 

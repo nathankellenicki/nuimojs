@@ -255,10 +255,10 @@ class Device extends EventEmitter {
             if (typeof options === "number") {
                 buf[10] += options;
             } else if (typeof options === "object") {
-                if (options.onion_skinning) {
+                if (options.onion_skinning || options.onionSkinning) {
                     buf[10] += Options.ONION_SKINNING;
                 }
-                if (options.builtin_matrix){
+                if (options.builtin_matrix || options.builtinMatrix){
                     buf[10] += Options.BUILTIN_MATRIX;
                 }
             }
