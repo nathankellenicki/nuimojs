@@ -1,9 +1,8 @@
 # Nuimo.js - A Node.js library for interacting with Nuimo devices
 
-UPDATE 0.4.0 - Added:
+UPDATE 1.0.0 - Changed:
 
-* Optional UUID discovery whitelist
-* Tracking and querying of connected devices
+* Nuimo will now keep scanning after discovering a device. You must manually call stop() to cease. 
 
 ### Installation
 
@@ -15,7 +14,7 @@ npm install nuimojs --save
 
 Nuimo.js uses the Noble BLE library by Sandeep Mistry. On macOS everything should function out of the box. On Linux and Windows there are [certain dependencies which may need installed first](https://github.com/sandeepmistry/noble#prerequisites).
 
-Note: Nuimo.js has been tested on macOS 10.11 and Debian/Raspbian on the Raspberry Pi 3 Model B.
+Note: Nuimo.js has been tested on macOS 10.11 and Debian/Raspbian on the Raspberry Pi 3 Model B. It is also reported to work on Windows 10 (See [these notes](https://github.com/nathankunicki/nuimojs/issues/17)).
 
 ### Usage
 

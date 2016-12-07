@@ -79,6 +79,7 @@ class Nuimo extends EventEmitter {
 
                 peripheral.removeAllListeners();
                 noble.stopScanning();
+                noble.startScanning();
 
                 let device = new Device(peripheral);
 
