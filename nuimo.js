@@ -1,4 +1,5 @@
-let noble = require("noble"),
+let fs = require("fs"),
+    noble = require("noble"),
     debug = require('debug')('nuimojs'),
     EventEmitter = require("events").EventEmitter;
 
@@ -58,8 +59,13 @@ class Nuimo extends EventEmitter {
     }
 
 
-    static get Options (){
+    static get Options () {
         return Device.Options;
+    }
+
+
+    static get wirething () {
+        return JSON.parse(fs.readFileSync(`${__dirname}/Wirefile`));
     }
 
 

@@ -15,7 +15,7 @@
         {"name": "Swipe Up", "event": "swipeUp"},
         {"name": "Swipe Down", "event": "swipeDown"},
         {"name": "Rotate", "event": "rotate", "params": [
-          {"name": "Rotation Amount", "type": "Number"}
+          {"name": "Rotation Amount", "param": "amount", "type": "Number"}
         ]},
         {"name": "Fly Left", "event": "flyLeft", "params": [
           {"name": "Speed", "param": "speed", "type": "Number"}
