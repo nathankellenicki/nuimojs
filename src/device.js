@@ -364,8 +364,8 @@ class Device extends EventEmitter {
 
     _handleClick (data) {
         if (data[0] === 0) {
-  //          debug("Button released");
-  //          this.emit("release");
+            debug("Button released");
+            this.emit("release");
         } else {
             debug("Button pressed");
             this.emit("press");
