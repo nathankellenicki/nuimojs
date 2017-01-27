@@ -2,7 +2,7 @@
 
 UPDATE 1.0.0 - Changed:
 
-* Nuimo will now keep scanning after discovering a device. You must manually call stop() to cease. 
+* Nuimo will now keep scanning after discovering a device. You must manually call stop() to cease.
 
 ### Installation
 
@@ -96,7 +96,7 @@ Brightness is a value between 0-255. Timeout is how long the pattern should appe
 Two options are currently available (If options is undefined, both are disabled by default):
 - options.onionSkinning (boolean) - Allows smoother transitions between matrices.
 - options.builtinMatrix (boolean) - Use the inbuilt matrix (Undocumented, subject to change).
- 
+
 Note: Options may also be specified as an integer representing a bitfield, with the following values:
 - ONION_SKINNING - 16
 - BUILTIN_MATRIX - 32
@@ -153,9 +153,9 @@ Individual events are also triggered: "swipeLeft", "swipeRight", "swipeUp", "swi
 
 ##### on("touch", callback(area))
 
-Triggered when the user touches an area on the central pad. Area can be one of: Nuimo.Area.LEFT, Nuimo.Area.RIGHT, Nuimo.Area.TOP, or Nuimo.Area.BOTTOM.
+Triggered when the user touches an area on the central pad. Area can be one of: Nuimo.Area.LEFT, Nuimo.Area.RIGHT, Nuimo.Area.TOP, Nuimo.Area.BOTTOM, Nuimo.Area.LONGLEFT, Nuimo.Area.LONGRIGHT, Nuimo.Area.LONGTOP, or Nuimo.Area.LONGBOTTOM.
 
-Individual events are also triggered: "touchLeft", "touchRight", "touchTop", "touchBottom". No area is passed to the callback for these events.
+Individual events are also triggered: "touchLeft", "touchRight", "touchTop", "touchBottom", "longTouchLeft", "longTouchRight", "longTouchTop", "longTouchBottom". No area is passed to the callback for these events.
 
 ##### on("rotate", callback(amount))
 

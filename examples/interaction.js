@@ -44,6 +44,14 @@ nuimo.on("discover", (device) => {
                 console.log("Touched top"); break;
             case (Nuimo.Area.BOTTOM):
                 console.log("Touched bottom"); break;
+            case (Nuimo.Area.LONGLEFT):
+                console.log("Long touched left"); break;
+            case (Nuimo.Area.LONGRIGHT):
+                console.log("Long touched right"); break;
+            case (Nuimo.Area.LONGTOP):
+                console.log("Long touched top"); break;
+            case (Nuimo.Area.LONGBOTTOM):
+                console.log("Long touched bottom"); break;
         }
     });
 

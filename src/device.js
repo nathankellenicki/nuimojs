@@ -19,7 +19,11 @@ const Area = {
     LEFT: 4,
     RIGHT: 5,
     TOP: 6,
-    BOTTOM: 7
+    BOTTOM: 7,
+    LONGLEFT: 8,
+    LONGRIGHT: 9,
+    LONGTOP: 10,
+    LONGBOTTOM: 11
 };
 
 // Direction is now deprecated, use Swipe, Fly, or Area instead
@@ -338,6 +342,22 @@ class Device extends EventEmitter {
             case (Area.BOTTOM):
                 debug("Touch bottom");
                 this.emit("touchBottom");
+                break;
+            case (Area.LONGLEFT):
+                debug("Long Touch left");
+                this.emit("longTouchLeft");
+                break;
+            case (Area.LONGRIGHT):
+                debug("Long Touch right");
+                this.emit("longTouchRight");
+                break;
+            case (Area.LONGTOP):
+                debug("Long Touch top");
+                this.emit("longTouchTop");
+                break;
+            case (Area.LONGBOTTOM):
+                debug("Long Touch bottom");
+                this.emit("longTouchBottom");
                 break;
         }
     }
