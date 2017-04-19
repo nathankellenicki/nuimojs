@@ -287,7 +287,7 @@ class Device extends EventEmitter {
     }
 
     _subscribeToCharacteristic (characteristic, callback) {
-        characteristic.on("read", (data, isNotification) => {
+        characteristic.on("data", (data, isNotification) => {
             return callback(data);
         });
         characteristic.subscribe((err) => {
