@@ -1,6 +1,6 @@
 {
   "name": "nuimojs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Nuimo.js - A Node.js library for interacting with Nuimo devices",
   "main": "nuimo.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/nathankunicki/nuimojs#readme",
   "dependencies": {
-    "noble": ">=1.6.0",
+    "noble": ">=1.8.0",
     "async": ">=2.0.1",
     "debug": ">=2.2.0"
   },
