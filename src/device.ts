@@ -1,38 +1,41 @@
-let async = require("async"),
-    debug = require("debug")("nuimojs"),
-    EventEmitter = require("events").EventEmitter;
+import async = require("async");
+import debug = require("debug");
+import noble = require("noble");
+import {EventEmitter} from "events";
+
+const log = debug("nuimojs");
 
 
-const Swipe = {
-    LEFT: 0,
-    RIGHT: 1,
-    UP: 2,
-    DOWN: 3
+enum Swipe {
+    LEFT,
+    RIGHT,
+    UP,
+    DOWN
 };
 
-const Fly = {
-    LEFT: 0,
-    RIGHT: 1
+enum Fly {
+    LEFT,
+    RIGHT
 };
 
-const Area = {
-    LEFT: 4,
-    RIGHT: 5,
-    TOP: 6,
-    BOTTOM: 7,
-    LONGLEFT: 8,
-    LONGRIGHT: 9,
-    LONGTOP: 10,
-    LONGBOTTOM: 11
+enum Area {
+    LEFT = 4,
+    RIGHT,
+    TOP,
+    BOTTOM,
+    LONGLEFT,
+    LONGRIGHT,
+    LONGTOP,
+    LONGBOTTOM
 };
 
 // Direction is now deprecated, use Swipe, Fly, or Area instead
 const Direction = Swipe;
 
 // Configuration bits, see https://github.com/nathankunicki/nuimojs/pull/12
-const Options = {
-    ONION_SKINNING: 16,
-    BUILTIN_MATRIX: 32
+enum Options {
+    ONION_SKINNING = 16,
+    BUILTIN_MATRIX = 32
 };
 
 
@@ -56,70 +59,81 @@ const UUID = {
 
 class Device extends EventEmitter {
 
+    public deviceType: string;
 
-    constructor (peripheral) {
+    private _peripheral: noble.Peripheral;
+    private _LEDCharacteristic: noble.Characteristic;
+    private _batteryLevel: number;
+    private _rssi: number;
+
+
+    constructor (peripheral: noble.Peripheral) {
         super();
 
         this.deviceType = "nuimo";
 
         this._peripheral = peripheral;
-        this._LEDCharacteristic = null;
         this._batteryLevel = 100;
         this._rssi = -100; // Initialize as -100 - no signal
     }
 
 
-    static get Direction () {
+    public get peripheral (): noble.Peripheral {
+        return this._peripheral;
+    }
+
+
+    public static get Direction (): any {
         return Direction;
     }
 
 
-    static get Swipe () {
+    public static get Swipe (): any {
         return Swipe;
     }
 
 
-    static get Fly () {
+    public static get Fly (): any {
         return Fly;
     }
 
 
-    static get Area () {
+    public static get Area (): any {
         return Area;
     }
 
 
-    static get Options () {
+    public static get Options (): any {
         return Options;
     }
 
 
-    get uuid () {
+    public get uuid (): string {
         return this._peripheral.uuid;
     }
 
 
-    get UUID () {
+    public get UUID (): string {
         return this.uuid;
     }
 
 
-    get batteryLevel () {
+    public get batteryLevel (): number {
         return this._batteryLevel;
     }
 
 
-    get rssi () {
+    public get rssi (): number {
         return this._rssi;
     }
 
 
-    get RSSI () {
+    public get RSSI (): number {
         return this.rssi;
     }
 
 
-    connect (callback) {
+    connect (callback: () => void) {
 
         let self = this;
 
@@ -127,12 +141,12 @@ class Device extends EventEmitter {
         let LEDReady = false;
         let userInputs = 0;
 
-        this._peripheral.connect((err) => {
+        this._peripheral.connect((err?: string) => {
 
             this._rssi = this._peripheral.rssi;
 
             let rssiUpdateInterval = setInterval(() => {
-                this._peripheral.updateRssi((err, rssi) => {
+                this._peripheral.updateRssi((err: string, rssi: number) => {
                     if (!err) {
                         if (this._rssi != rssi) {
                             this._rssi = rssi;
@@ -146,9 +160,9 @@ class Device extends EventEmitter {
                clearInterval(rssiUpdateInterval);
             });
 
-            self._peripheral.discoverServices([], (error, services) => {
+            self._peripheral.discoverServices([], (err: string, services: noble.Service[]) => {
 
-                debug("Service discovery started");
+                log("Service discovery started");
 
                 let serviceIndex = 0;
 
@@ -156,11 +170,11 @@ class Device extends EventEmitter {
                     function () {
                         return (serviceIndex < services.length);
                     },
-                    function (callback) {
+                    function (callback: () => void) {
 
                         let service = services[serviceIndex];
 
-                        service.discoverCharacteristics([], (error, characteristics) => {
+                        service.discoverCharacteristics([], (err: string, characteristics: noble.Characteristic[]) => {
 
                             let characteristicIndex = 0;
 
@@ -168,38 +182,38 @@ class Device extends EventEmitter {
                                 function () {
                                     return (characteristicIndex < characteristics.length);
                                 },
-                                function (callback) {
+                                function (callback: () => void) {
 
                                     let characteristic = characteristics[characteristicIndex];
 
                                     switch (service.uuid) {
                                         case UUID.Service.BATTERY_STATUS:
                                             batteryReady = true;
-                                            debug("Found Battery characteristic");
+                                            log("Found Battery characteristic");
                                             self._subscribeToCharacteristic(characteristic, self._handleBatteryChange.bind(self));
                                             characteristic.read();
                                             break;
                                         case UUID.Service.LED_MATRIX:
                                             self._LEDCharacteristic = characteristic;
                                             LEDReady = true;
-                                            debug("Found LED characteristic");
+                                            log("Found LED characteristic");
                                             break;
                                         case UUID.Service.USER_INPUT_EVENTS:
                                             switch (characteristic.uuid) {
                                                 case UUID.Characteristic.BUTTON_CLICK:
-                                                    debug("Found Button Click characteristic");
+                                                    log("Found Button Click characteristic");
                                                     self._subscribeToCharacteristic(characteristic, self._handleClick.bind(self));
                                                     break;
                                                 case UUID.Characteristic.FLY:
-                                                    debug("Found Fly characteristic");
+                                                    log("Found Fly characteristic");
                                                     self._subscribeToCharacteristic((characteristic), self._handleFlying.bind(self));
                                                     break;
                                                 case UUID.Characteristic.ROTATION:
-                                                    debug("Found Rotation characteristic");
+                                                    log("Found Rotation characteristic");
                                                     self._subscribeToCharacteristic(characteristic, self._handleRotation.bind(self));
                                                     break;
                                                 case UUID.Characteristic.SWIPE:
-                                                    debug("Found Swipe characteristic");
+                                                    log("Found Swipe characteristic");
                                                     self._subscribeToCharacteristic(characteristic, self._handleTouchSwipe.bind(self));
                                                     break;
                                             }
@@ -211,22 +225,22 @@ class Device extends EventEmitter {
                                     return callback();
 
                                 },
-                                function (err) {
+                                function (err?: Error) {
                                     serviceIndex++;
                                     return callback();
                                 }
                             );
                         });
                     },
-                    function (err) {
+                    function (err?: Error) {
 
-                        debug("Service discovery finished");
+                        log("Service discovery finished");
 
                         if (err !== null || batteryReady === false || LEDReady === false || userInputs < 5) {
                             self._peripheral.disconnect();
-                            debug("Force disconnect");
+                            log("Force disconnect");
                         } else {
-                            debug("Emit connect");
+                            log("Emit connect");
                             self.emit("connect");
                         }
 
@@ -245,7 +259,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData, brightness, timeout, options) {
+    setLEDMatrix (matrixData: any, brightness: number, timeout: number, options: any) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);
@@ -276,7 +290,7 @@ class Device extends EventEmitter {
         }
     }
 
-    _LEDArrayToBuffer (arr) {
+    _LEDArrayToBuffer (arr: Array<number>) {
         let buf = Buffer.alloc(11);
 
         for (let i = 0; i < 11; i++) {
@@ -286,24 +300,24 @@ class Device extends EventEmitter {
         return buf;
     }
 
-    _subscribeToCharacteristic (characteristic, callback) {
-        characteristic.on("data", (data, isNotification) => {
+    _subscribeToCharacteristic (characteristic: noble.Characteristic, callback: (data: Buffer) => void) {
+        characteristic.on("data", (data: Buffer, isNotification: boolean) => {
             return callback(data);
         });
-        characteristic.subscribe((err) => {
+        characteristic.subscribe((err: string) => {
             if (err) {
                 this.emit("error", err);
             }
         });
     }
 
-    _handleBatteryChange (data) {
+    _handleBatteryChange (data: Buffer) {
         this._batteryLevel = data[0];
-        debug("Battery level %s%", data[0]);
+        log("Battery level %s%", data[0]);
         this.emit("batteryLevelChange", data[0]);
     }
 
-    _handleTouchSwipe (data) {
+    _handleTouchSwipe (data: Buffer) {
         let direction = data[0];
         if (direction <= 3) {
             this.emit("swipe", direction);
@@ -312,73 +326,73 @@ class Device extends EventEmitter {
         }
         switch (direction) {
             case (Swipe.LEFT):
-                debug("Swipe left");
+                log("Swipe left");
                 this.emit("swipeLeft");
                 break;
             case (Swipe.RIGHT):
-                debug("Swipe right");
+                log("Swipe right");
                 this.emit("swipeRight");
                 break;
             case (Swipe.UP):
-                debug("Swipe up");
+                log("Swipe up");
                 this.emit("swipeUp");
                 break;
             case (Swipe.DOWN):
-                debug("Swipe down");
+                log("Swipe down");
                 this.emit("swipeDown");
                 break;
             case (Area.LEFT):
-                debug("Touch left");
+                log("Touch left");
                 this.emit("touchLeft");
                 break;
             case (Area.RIGHT):
-                debug("Touch right");
+                log("Touch right");
                 this.emit("touchRight");
                 break;
             case (Area.TOP):
-                debug("Touch top");
+                log("Touch top");
                 this.emit("touchTop");
                 break;
             case (Area.BOTTOM):
-                debug("Touch bottom");
+                log("Touch bottom");
                 this.emit("touchBottom");
                 break;
             case (Area.LONGLEFT):
-                debug("Long Touch left");
+                log("Long Touch left");
                 this.emit("longTouchLeft");
                 break;
             case (Area.LONGRIGHT):
-                debug("Long Touch right");
+                log("Long Touch right");
                 this.emit("longTouchRight");
                 break;
             case (Area.LONGTOP):
-                debug("Long Touch top");
+                log("Long Touch top");
                 this.emit("longTouchTop");
                 break;
             case (Area.LONGBOTTOM):
-                debug("Long Touch bottom");
+                log("Long Touch bottom");
                 this.emit("longTouchBottom");
                 break;
         }
     }
 
-    _handleClick (data) {
+    _handleClick (data: Buffer) {
         if (data[0] === 0) {
-            debug("Button released");
+            log("Button released");
             this.emit("release");
         } else {
-            debug("Button pressed");
+            log("Button pressed");
             this.emit("press");
         }
     }
 
-    _handleRotation (data) {
-        let amount = data.readInt16LE();
-        debug("Rotate %s", amount);
+    _handleRotation (data: Buffer) {
+        let amount = data.readInt16LE(0);
+        log("Rotate %s", amount);
         this.emit("rotate", amount);
     }
 
-    _handleFlying (data) {
+    _handleFlying (data: Buffer) {
 
         let gesture = data[0],
             amount = data[1];
@@ -389,20 +403,20 @@ class Device extends EventEmitter {
             case 2:
                 let direction = gesture,
                     speed = amount;
-                this.emit("fly", direction, speed); break;
+                this.emit("fly", direction, speed);
                 switch (direction) {
                     case (Fly.LEFT):
-                        debug("Fly left %s", speed);
+                        log("Fly left %s", speed);
                         this.emit("flyLeft", speed);
                         break;
                     case (Fly.RIGHT):
-                        debug("Fly right %s", speed);
+                        log("Fly right %s", speed);
                         this.emit("flyRight", speed);
                         break;
                 }
                 break;
             case 4:
-                debug("Detect %s", amount);
+                log("Detect %s", amount);
                 this.emit("detect", amount);
                 this.emit("distance", amount);
                 break;
@@ -410,4 +424,4 @@ class Device extends EventEmitter {
     }
 }
 
-module.exports = Device;
+export { Device };

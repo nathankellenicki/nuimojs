@@ -4,7 +4,7 @@
   "description": "Nuimo.js - A Node.js library for interacting with Nuimo devices",
   "main": "nuimo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,14 @@
   },
   "engines": {
     "node": ">=6.0.0"
+  },
+  "devDependencies": {
+    "@types/async": "2.0.44",
+    "@types/debug": "0.0.30",
+    "@types/noble": "0.0.34",
+    "@types/node": "8.0.34",
+    "gulp": "3.9.1",
+    "gulp-typescript": "3.2.2",
+    "typescript": "2.5.3"
   }
 }

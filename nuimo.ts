@@ -1,14 +1,17 @@
-let fs = require("fs"),
-    noble = require("noble"),
-    debug = require('debug')('nuimojs'),
-    EventEmitter = require("events").EventEmitter;
+import * as fs from "fs";
+import debug = require("debug");
+import noble = require("noble");
+import { EventEmitter } from "events";
 
-let Device = require("./src/device.js");
+const log = debug("nuimojs");
 
-let ready = false,
-    wantScan = false;
+import { Device } from "./src/device";
 
-noble.on("stateChange", (state) => {
+let ready: boolean = false,
+    wantScan: boolean = false;
+
+
+noble.on("stateChange", (state: string) => {
     ready = (state === "poweredOn");
     if (ready) {
         if (wantScan) {
@@ -19,10 +22,14 @@ noble.on("stateChange", (state) => {
     }
 });
 
+
 class Nuimo extends EventEmitter {
 
+    private _connectedDevices: {[key: string]: Device};
+    private _useWhitelist: boolean;
+    private _whitelist: Array<string>;
 
-    constructor (whitelist) {
+    constructor (whitelist: any) {
         super();
         this._connectedDevices = {};
         this._useWhitelist = false;
@@ -65,21 +72,21 @@ class Nuimo extends EventEmitter {
 
 
     static get wirething () {
-        return JSON.parse(fs.readFileSync(`${__dirname}/Wirefile`));
+        return JSON.parse(fs.readFileSync(`${__dirname}/Wirefile`).toString());
     }
 
 
     scan () {
         wantScan = true;
 
-        noble.on("discover", (peripheral) => {
+        noble.on("discover", (peripheral: noble.Peripheral) => {
 
             let advertisement = peripheral.advertisement;
 
             if (advertisement.localName === "Nuimo") {
 
                 if (this._useWhitelist && this._whitelist.indexOf(peripheral.uuid) < 0) {
-                    debug("Discovered device not in UUID whitelist");
+                    log("Discovered device not in UUID whitelist");
                     return;
                 }
 
@@ -89,13 +96,13 @@ class Nuimo extends EventEmitter {
 
                 let device = new Device(peripheral);
 
-                device._peripheral.on("connect", () => {
-                    debug("Peripheral connected");
+                device.peripheral.on("connect", () => {
+                    log("Peripheral connected");
                     this._connectedDevices[device.uuid] = device;
                 });
 
-                device._peripheral.on("disconnect", () => {
-                    debug("Peripheral disconnected");
+                device.peripheral.on("disconnect", () => {
+                    log("Peripheral disconnected");
                     delete this._connectedDevices[device.uuid];
 
                     if (wantScan) {
@@ -126,7 +133,7 @@ class Nuimo extends EventEmitter {
     }
 
 
-    getConnectedDeviceByUUID (uuid) {
+    getConnectedDeviceByUUID (uuid: string) {
         return this._connectedDevices[uuid];
     }
 
@@ -140,4 +147,4 @@ class Nuimo extends EventEmitter {
 
 }
 
-module.exports = Nuimo;
+export { Nuimo };
