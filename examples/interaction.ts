@@ -1,5 +1,5 @@
-let Nuimo = require("../nuimo.js"),
-    nuimo = new Nuimo();
+import { Nuimo, Device } from "../nuimo";
+const nuimo = new Nuimo();
 
 nuimo.on("discover", (device) => {
 
@@ -21,7 +21,7 @@ nuimo.on("discover", (device) => {
         console.log("Button released");
     });
 
-    device.on("swipe", (direction) => {
+    device.on("swipe", (direction: number) => {
         switch (direction) {
             case (Nuimo.Swipe.LEFT):
                 console.log("Swiped left"); break;
@@ -34,7 +34,7 @@ nuimo.on("discover", (device) => {
         }
     });
 
-    device.on("touch", (direction) => {
+    device.on("touch", (direction: number) => {
         switch (direction) {
             case (Nuimo.Area.LEFT):
                 console.log("Touched left"); break;
@@ -55,11 +55,11 @@ nuimo.on("discover", (device) => {
         }
     });
 
-    device.on("rotate", (amount) => {
+    device.on("rotate", (amount: number) => {
         console.log(`Rotated by ${amount}`);
     });
 
-    device.on("fly", (direction, speed) => {
+    device.on("fly", (direction: number, speed: number) => {
         switch (direction) {
             case (Nuimo.Fly.LEFT):
                 console.log(`Flew left by speed ${speed}`); break;
@@ -68,7 +68,7 @@ nuimo.on("discover", (device) => {
         }
     });
 
-    device.on("detect", (distance) => {
+    device.on("detect", (distance: number) => {
         console.log(`Detected hand at distance ${distance}`);
     });
 

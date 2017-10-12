@@ -29,7 +29,7 @@ class Nuimo extends EventEmitter {
     private _useWhitelist: boolean = false;
     private _whitelist: string[] = [];
 
-    constructor (whitelist: string | string[]) {
+    constructor (whitelist?: string | string[]) {
         super();
 
         if (whitelist) {
@@ -41,11 +41,6 @@ class Nuimo extends EventEmitter {
                 this._useWhitelist = true;
             }
         }
-    }
-
-
-    static get Direction () {
-        return Device.Direction;
     }
 
 
@@ -145,4 +140,4 @@ class Nuimo extends EventEmitter {
 
 }
 
-export { Nuimo };
+export { Nuimo, Device };

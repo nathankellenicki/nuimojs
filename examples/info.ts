@@ -1,7 +1,7 @@
-let Nuimo = require("../nuimo.js"),
-    nuimo = new Nuimo();
+import { Nuimo, Device } from "../nuimo";
+const nuimo = new Nuimo();
 
-nuimo.on("discover", (device) => {
+nuimo.on("discover", (device: Device) => {
 
     console.log(`Discovered Nuimo (${device.uuid})`);
 
@@ -13,11 +13,11 @@ nuimo.on("discover", (device) => {
         console.log("Nuimo disconnected");
     });
 
-    device.on("batteryLevelChange", (level) => {
+    device.on("batteryLevelChange", (level: number) => {
         console.log(`Battery level changed to ${level}%`);
     });
 
-    device.on("rssiChange", (rssi) => {
+    device.on("rssiChange", (rssi: number) => {
         console.log(`Signal strength (RSSI) changed to ${rssi}`);
     });
 

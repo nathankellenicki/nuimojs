@@ -123,7 +123,7 @@ class Device extends EventEmitter {
     }
 
 
-    connect (callback: () => void) {
+    connect (callback?: () => void) {
 
         let self = this;
 
@@ -249,7 +249,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData: Buffer | number[], brightness: number, timeout: number, options: number | {[key: string]: number}) {
+    setLEDMatrix (matrixData: Buffer | number[], brightness: number, timeout: number, options?: number | {[key: string]: number}) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);

@@ -1,7 +1,7 @@
-let Nuimo = require("../nuimo.js"),
-    nuimo = new Nuimo();
+import { Nuimo, Device } from "../nuimo";
+const nuimo = new Nuimo();
 
-nuimo.on("discover", (device) => {
+nuimo.on("discover", (device: Device) => {
 
     console.log(`Discovered Nuimo (${device.uuid})`);
 
