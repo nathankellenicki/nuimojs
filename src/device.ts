@@ -63,18 +63,15 @@ class Device extends EventEmitter {
 
     private _peripheral: noble.Peripheral;
     private _LEDCharacteristic: noble.Characteristic;
-    private _batteryLevel: number;
-    private _rssi: number;
+    private _batteryLevel: number = 100;
+    private _rssi: number = -100; // Initialize as -100 - no signal
 
 
     constructor (peripheral: noble.Peripheral) {
         super();
 
         this.deviceType = "nuimo";
-
         this._peripheral = peripheral;
-        this._batteryLevel = 100;
-        this._rssi = -100; // Initialize as -100 - no signal
     }
 
 

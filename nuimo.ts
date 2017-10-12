@@ -25,14 +25,12 @@ noble.on("stateChange", (state: string) => {
 
 class Nuimo extends EventEmitter {
 
-    private _connectedDevices: {[key: string]: Device};
-    private _useWhitelist: boolean;
-    private _whitelist: Array<string>;
+    private _connectedDevices: {[key: string]: Device} = {};
+    private _useWhitelist: boolean = false;
+    private _whitelist: Array<string> = [];
 
     constructor (whitelist: any) {
         super();
-        this._connectedDevices = {};
-        this._useWhitelist = false;
 
         if (whitelist) {
             if (Array.isArray(whitelist)) {
