@@ -29,8 +29,6 @@ enum Area {
     LONGBOTTOM
 };
 
-// Direction is now deprecated, use Swipe, Fly, or Area instead
-const Direction = Swipe;
 
 // Configuration bits, see https://github.com/nathankunicki/nuimojs/pull/12
 enum Options {
@@ -77,11 +75,6 @@ class Device extends EventEmitter {
 
     public get peripheral (): noble.Peripheral {
         return this._peripheral;
-    }
-
-
-    public static get Direction (): any {
-        return Direction;
     }
 
 
@@ -256,7 +249,7 @@ class Device extends EventEmitter {
     }
 
 
-    setLEDMatrix (matrixData: any, brightness: number, timeout: number, options: any) {
+    setLEDMatrix (matrixData: Buffer | number[], brightness: number, timeout: number, options: number | {[key: string]: number}) {
 
         if (this._LEDCharacteristic) {
             let buf = Buffer.alloc(13);
@@ -287,7 +280,7 @@ class Device extends EventEmitter {
         }
     }
 
-    _LEDArrayToBuffer (arr: Array<number>) {
+    _LEDArrayToBuffer (arr: number[]) {
         let buf = Buffer.alloc(11);
 
         for (let i = 0; i < 11; i++) {

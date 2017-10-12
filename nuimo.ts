@@ -27,9 +27,9 @@ class Nuimo extends EventEmitter {
 
     private _connectedDevices: {[key: string]: Device} = {};
     private _useWhitelist: boolean = false;
-    private _whitelist: Array<string> = [];
+    private _whitelist: string[] = [];
 
-    constructor (whitelist: any) {
+    constructor (whitelist: string | string[]) {
         super();
 
         if (whitelist) {
